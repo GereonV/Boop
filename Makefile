@@ -25,8 +25,10 @@ release: LDFLAGS+=$(RELEASELDFLAGS)
 release: $(BIN)
 OBJS:=$(patsubst $(SRCDIR)/%.$(SRCEXT),$(OBJDIR)/%.o,$(wildcard $(SRCDIR)/*.$(SRCEXT)))
 -include $(OBJS:%.o=%.d)
-$(BIN): $(OBJS)
+$(BIN): $(SRCDIR)/shadersrc.h $(OBJS)
 	$(C) $(OBJS) -o $@ $(LDFLAGS)
+$(SRCDIR)/shadersrc.h: $(wildcard shader/*)
+	fileprocessor -O$@ $^
 $(OBJDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	$(C) -c $< -o $@ -MMD $(CFLAGS)
 dirs:
