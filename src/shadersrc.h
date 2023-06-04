@@ -6,8 +6,6 @@
 "out vec4 outColor;\n" \
 "\n" \
 "void main() {\n" \
-"	if(ndcZ >= 0.5)\n" \
-"		discard;\n" \
 "	vec3 base = mix(vec3(0.4, 0.6, 1), vec3(0.6, 1, 0.4), localZ + 0.5);\n" \
 "	vec3 color = mix(base, vec3(0), (ndcZ + 1) / 2);\n" \
 "	outColor = vec4(color, 0);\n" \
@@ -28,6 +26,9 @@
 "	vec3 pos = inPos.x * vec3(c, 0, -s) +\n" \
 "	           inPos.y * vec3(0, 1,  0) +\n" \
 "	           inPos.z * vec3(s, 0,  c);\n" \
+"	pos = pos.x * vec3(1,  0, 0) +\n" \
+"	      pos.y * vec3(0,  c, s) +\n" \
+"	      pos.z * vec3(0, -s, c);\n" \
 "	pos.x /= uAspectRatio;\n" \
 "	pos.z *= -1;\n" \
 "	gl_Position = vec4(pos, 1);\n" \

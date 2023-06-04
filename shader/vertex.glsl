@@ -12,6 +12,9 @@ void main() {
 	vec3 pos = inPos.x * vec3(c, 0, -s) +
 	           inPos.y * vec3(0, 1,  0) +
 	           inPos.z * vec3(s, 0,  c);
+	pos = pos.x * vec3(1,  0, 0) +
+	      pos.y * vec3(0,  c, s) +
+	      pos.z * vec3(0, -s, c);
 	pos.x /= uAspectRatio;
 	pos.z *= -1;
 	gl_Position = vec4(pos, 1);

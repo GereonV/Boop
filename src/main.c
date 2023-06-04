@@ -5,29 +5,30 @@
 #include "shader.h"
 
 static float const vertices[] = {
-	-0.5f, -0.5f,  0.5f, // front bottom left
-	 0.5f, -0.5f,  0.5f, // front bottom right
-	 0.5f,  0.5f,  0.5f, // front top    right
-	-0.5f,  0.5f,  0.5f, // front top    left
-	-0.5f, -0.5f, -0.5f, // back  bottom left
-	 0.5f, -0.5f, -0.5f, // back  bottom right
-	 0.5f,  0.5f, -0.5f, // back  top    right
-	-0.5f,  0.5f, -0.5f, // back  top    left
+	-0.5f, -0.5f,  0.5f, // 0 near bottom left
+	 0.5f, -0.5f,  0.5f, // 1 near bottom right
+	 0.5f,  0.5f,  0.5f, // 2 near top    right
+	-0.5f,  0.5f,  0.5f, // 3 near top    left
+	-0.5f, -0.5f, -0.5f, // 4 far  bottom left
+	 0.5f, -0.5f, -0.5f, // 5 far  bottom right
+	 0.5f,  0.5f, -0.5f, // 6 far  top    right
+	-0.5f,  0.5f, -0.5f, // 7 far  top    left
 };
 
+// 0 1 3 (near   bottom left)
+// 3 1 2 (near   top    right)
+// 3 2 6 (top    near   right)
+// 6 2 1 (right  near   top)
+// 6 1 5 (right  far    bottom)
+// 5 1 0 (bottom near   right)
+// 5 0 4 (bottom far    left)
+// 4 0 3 (left   near   bottom)
+// 4 3 7 (left   far    top)
+// 7 3 6 (top    far    left)
+// 7 6 4 (far    top    left)
+// 4 6 5 (far    bottom right)
 static unsigned char const indicies[] = {
-	0, 1, 2, // front  bottom right
-	0, 3, 2, // front  top    left
-	4, 5, 6, // back   bottom right
-	4, 7, 6, // back   top    left
-	1, 5, 6, // right  bottom far
-	1, 2, 6, // right  top    near
-	4, 0, 3, // left   bottom near
-	4, 7, 3, // left   top    far
-	3, 2, 6, // top    near   right
-	3, 7, 6, // top    far    left
-	0, 1, 5, // bottom near   right
-	0, 4, 5, // bottom far    left
+	0, 1, 3, 2, 6, 1, 5, 0, 4, 3, 7, 6, 4, 5
 };
 
 int main() {
@@ -55,6 +56,7 @@ int main() {
 	GLuint program = create_shaders();
 	glClearColor(0.4f, 0.6f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while(!glfwWindowShouldClose(window)) {
 		int width, height;
@@ -66,7 +68,7 @@ int main() {
 		glUseProgram(program);
 		glUniform1f(0, (float) width / (float) height);
 		glUniform1f(1, (float) time);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, nullptr);
+		glDrawElements(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_BYTE, nullptr);
 		glBindVertexArray(0);
 		glUseProgram(0);
 		glfwSwapBuffers(window);
