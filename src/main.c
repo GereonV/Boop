@@ -42,14 +42,12 @@ int main() {
 		puts("gladLoadGL() failed");
 		return 1;
 	}
-	GLuint vao;
-	glCreateVertexArrays(1, &vao);
+	GLuint vao; glCreateVertexArrays(1, &vao);
 	glEnableVertexArrayAttrib(vao, 0);
 	glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, false, 0);
 	glVertexArrayAttribBinding(vao, 0, 0);
-	GLuint bufs[2];
-	glCreateBuffers(2, bufs);
-	GLuint vbo = bufs[0], ebo = bufs[1];
+	GLuint vbo; glGenBuffers(1, &vbo);
+	GLuint ebo; glCreateBuffers(1, &ebo);
 	glVertexArrayVertexBuffer(vao, 0, vbo, 0, 3 * sizeof(float));
 	glVertexArrayElementBuffer(vao, ebo);
 	glNamedBufferData(vbo, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -57,7 +55,7 @@ int main() {
 	GLuint program = create_shaders();
 	glClearColor(0.4f, 0.6f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	while(!glfwWindowShouldClose(window)) {
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
