@@ -58,6 +58,9 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	unsigned long long frames = 0;
+	glfwSwapInterval(0);
+	glfwSetTime(0.0);
 	while(!glfwWindowShouldClose(window)) {
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
@@ -68,10 +71,13 @@ int main() {
 		glUseProgram(program);
 		glUniform1f(0, (float) width / (float) height);
 		glUniform1f(1, (float) time);
-		glDrawElements(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_BYTE, nullptr);
+		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_BYTE, nullptr, 40000);
 		glBindVertexArray(0);
 		glUseProgram(0);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		++frames;
 	}
+	double end_time = glfwGetTime();
+	printf("avg. FPS: %f\n", (double) frames / end_time);
 }
