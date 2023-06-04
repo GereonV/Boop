@@ -4,31 +4,60 @@
 #include <GLFW/glfw3.h>
 #include "shader.h"
 
-static float const vertices[] = {
-	-0.5f, -0.5f,  0.5f, // 0 near bottom left
-	 0.5f, -0.5f,  0.5f, // 1 near bottom right
-	 0.5f,  0.5f,  0.5f, // 2 near top    right
-	-0.5f,  0.5f,  0.5f, // 3 near top    left
-	-0.5f, -0.5f, -0.5f, // 4 far  bottom left
-	 0.5f, -0.5f, -0.5f, // 5 far  bottom right
-	 0.5f,  0.5f, -0.5f, // 6 far  top    right
-	-0.5f,  0.5f, -0.5f, // 7 far  top    left
+constexpr float vertices[] = {
+	// near bottom left
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, //  0 x
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, //  1 y
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //  2 z
+	// near bottom right
+	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //  3 x
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, //  4 y
+	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //  5 z
+	// near top right
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //  6 x
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //  7 y
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //  8 z
+	// near top left
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, //  9 x
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, // 10 y
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, // 11 z
+	// far bottom left
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, // 12 x
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, // 13 y
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // 14 z
+	// far bottom right
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, // 15 x
+	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, // 16 y
+	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // 17 z
+	// far top right
+	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f, // 18 x
+	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, // 19 y
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // 20 z
+	// far top left
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, // 21 x
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, // 22 y
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // 23 z
 };
 
-// 0 1 3 (near   bottom left)
-// 3 1 2 (near   top    right)
-// 3 2 6 (top    near   right)
-// 6 2 1 (right  near   top)
-// 6 1 5 (right  far    bottom)
-// 5 1 0 (bottom near   right)
-// 5 0 4 (bottom far    left)
-// 4 0 3 (left   near   bottom)
-// 4 3 7 (left   far    top)
-// 7 3 6 (top    far    left)
-// 7 6 4 (far    top    left)
-// 4 6 5 (far    bottom right)
-static unsigned char const indicies[] = {
-	0, 1, 3, 2, 6, 1, 5, 0, 4, 3, 7, 6, 4, 5
+constexpr unsigned char indicies[] = {
+	// near
+	 2,  5,  8,
+	 2,  8, 11,
+	// far
+	14, 20, 17,
+	14, 23, 20,
+	// left
+	12,  0,  9,
+	12,  9, 21,
+	// right
+	 3, 15, 18,
+	 3, 18,  6,
+	// top
+	10,  7, 19,
+	10, 19, 22,
+	// bottom
+	13, 16,  4,
+	13,  4,  1,
 };
 
 int main() {
@@ -47,9 +76,12 @@ int main() {
 	glEnableVertexArrayAttrib(vao, 0);
 	glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, false, 0);
 	glVertexArrayAttribBinding(vao, 0, 0);
+	glEnableVertexArrayAttrib(vao, 1);
+	glVertexArrayAttribFormat(vao, 1, 3, GL_FLOAT, false, 3 * sizeof(float));
+	glVertexArrayAttribBinding(vao, 1, 0);
 	GLuint vbo; glGenBuffers(1, &vbo);
 	GLuint ebo; glCreateBuffers(1, &ebo);
-	glVertexArrayVertexBuffer(vao, 0, vbo, 0, 3 * sizeof(float));
+	glVertexArrayVertexBuffer(vao, 0, vbo, 0, 6 * sizeof(float));
 	glVertexArrayElementBuffer(vao, ebo);
 	glNamedBufferData(vbo, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glNamedBufferData(ebo, sizeof(indicies), indicies, GL_STATIC_DRAW);
@@ -58,9 +90,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	unsigned long long frames = 0;
-	glfwSwapInterval(0);
-	glfwSetTime(0.0);
+	// glfwSwapInterval(0);
 	while(!glfwWindowShouldClose(window)) {
 		int width, height;
 		glfwGetFramebufferSize(window, &width, &height);
@@ -71,13 +101,10 @@ int main() {
 		glUseProgram(program);
 		glUniform1f(0, (float) width / (float) height);
 		glUniform1f(1, (float) time);
-		glDrawElementsInstanced(GL_TRIANGLE_STRIP, 14, GL_UNSIGNED_BYTE, nullptr, 40000);
+		glDrawElements(GL_TRIANGLES, sizeof(indicies), GL_UNSIGNED_BYTE, nullptr);
 		glBindVertexArray(0);
 		glUseProgram(0);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		++frames;
 	}
-	double end_time = glfwGetTime();
-	printf("avg. FPS: %f\n", (double) frames / end_time);
 }
