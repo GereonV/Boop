@@ -13,7 +13,7 @@ void construct_context() {
 	atexit(glfwTerminate);
 	// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5); // TODO check version
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	// TODO GLFW_X11_CLASS/INSTANCE_NAME
 	window = glfwCreateWindow(1920, 1080, "Boop", nullptr, nullptr);
 	char const * error_message;

@@ -13,7 +13,7 @@ LDFLAGS:=-flto=auto -Wl,--gc-sections -lglfw
 DEBUGCFLAGS:=-Og -g -D _DEBUG
 DEBUGLDFLAGS:=-g
 
-RELEASECFLAGS:=-O3
+RELEASECFLAGS:=-O3 -ffast-math
 RELEASELDFLAGS:=
 
 .PHONY: debug release dirs clean
