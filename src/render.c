@@ -16,4 +16,5 @@ void render() {
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, nullptr);
 	glBindVertexArray(0);
 	glUseProgram(0);
+	glfwSwapBuffers(window);
 }
