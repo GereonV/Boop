@@ -1,5 +1,4 @@
 #include "render_impl.h"
-#include "context.h"
 
 #define ASPECT_RATIO_UNIFORM_LOCATION 0
 #define ANGLE_UNIFORM_LOCATION        1
