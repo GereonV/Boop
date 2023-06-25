@@ -4,16 +4,19 @@
 #include "shader.h"
 
 GLFWwindow * window;
-GLuint program, vao;
+GLuint program, vao, instance_vbo;
 
-#define POSITION_ATTRIBUTE_INDEX      0
-#define NORMAL_ATTRIBUTE_INDEX        1
-#define BINDING_INDEX                 0
+#define POSITION_ATTRIBUTE_INDEX          0
+#define NORMAL_ATTRIBUTE_INDEX            1
+#define MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX 2
+#define NORMAL_MATRIX_ATTRIBUTE_INDEX     6
+#define VERTEX_BINDING_INDEX              0
+#define INSTANCE_BINDING_INDEX            1
 
 typedef void getter_t(GLuint obj, GLenum name, GLint * out);
 typedef void info_log_getter_t(GLuint obj, GLsizei buf_size, GLsizei *, char * buf);
 
-static char * get_info_log(GLuint obj, getter_t * getter, info_log_getter_t * info_log_getter) {
+static char * get_info_log(GLuint obj, getter_t getter, info_log_getter_t info_log_getter) {
 	GLint info_log_length; getter(obj, GL_INFO_LOG_LENGTH, &info_log_length);
 	char * info_log = malloc((size_t) info_log_length);
 	info_log_getter(obj, (GLsizei) info_log_length, nullptr, info_log);
@@ -139,16 +142,28 @@ void construct_renderer() {
 	glCreateVertexArrays(1, &vao);
 	glEnableVertexArrayAttrib(vao, POSITION_ATTRIBUTE_INDEX);
 	glVertexArrayAttribFormat(vao, POSITION_ATTRIBUTE_INDEX, 3, GL_FLOAT, false, 0);
-	glVertexArrayAttribBinding(vao, POSITION_ATTRIBUTE_INDEX, BINDING_INDEX);
+	glVertexArrayAttribBinding(vao, POSITION_ATTRIBUTE_INDEX, VERTEX_BINDING_INDEX);
 	glEnableVertexArrayAttrib(vao, NORMAL_ATTRIBUTE_INDEX);
 	glVertexArrayAttribFormat(vao, NORMAL_ATTRIBUTE_INDEX, 3, GL_FLOAT, false, 3 * sizeof(float));
-	glVertexArrayAttribBinding(vao, NORMAL_ATTRIBUTE_INDEX, BINDING_INDEX);
+	glVertexArrayAttribBinding(vao, NORMAL_ATTRIBUTE_INDEX, VERTEX_BINDING_INDEX);
+	for(GLuint i = 0; i < 4; ++i) {
+		glEnableVertexArrayAttrib(vao, MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX + i);
+		glVertexArrayAttribFormat(vao, MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX + i, 4, GL_FLOAT, false, i * 4 * sizeof(float));
+		glVertexArrayAttribBinding(vao, MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX + i, INSTANCE_BINDING_INDEX);
+	}
+	for(GLuint i = 0; i < 3; ++i) {
+		glEnableVertexArrayAttrib(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i);
+		glVertexArrayAttribFormat(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, 3, GL_FLOAT, false, i * 3 * sizeof(float));
+		glVertexArrayAttribBinding(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, INSTANCE_BINDING_INDEX);
+	}
 	{ // construct buffer objects
-		GLuint vbo; glGenBuffers(1, &vbo);
-		GLuint ebo; glCreateBuffers(1, &ebo);
-		glVertexArrayVertexBuffer(vao, BINDING_INDEX, vbo, 0, 6 * sizeof(float));
+		GLuint vbos[2]; glGenBuffers(2, vbos); instance_vbo = vbos[1];
+		GLuint ebo;     glCreateBuffers(1, &ebo);
+		glVertexArrayVertexBuffer(vao,   VERTEX_BINDING_INDEX, vbos[0], 0,  6 * sizeof(float)); // 2 * vec3
+		glVertexArrayVertexBuffer(vao, INSTANCE_BINDING_INDEX, vbos[1], 0, 25 * sizeof(float)); // mat4 + mat3
+		glVertexArrayBindingDivisor(vao, vbos[1], 1);
 		glVertexArrayElementBuffer(vao, ebo);
-		glNamedBufferData(vbo, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glNamedBufferData(vbos[0], sizeof(vertices), vertices, GL_STATIC_DRAW);
 		glNamedBufferData(ebo, sizeof(indicies), indicies, GL_STATIC_DRAW);
 	}
 	// change settings
