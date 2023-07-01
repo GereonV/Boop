@@ -163,8 +163,8 @@ void construct_renderer() {
 		glVertexArrayVertexBuffer(vao, INSTANCE_BINDING_INDEX, vbos[1], 0, 25 * sizeof(float)); // mat4 + mat3
 		glVertexArrayBindingDivisor(vao, vbos[1], 1);
 		glVertexArrayElementBuffer(vao, ebo);
-		glNamedBufferData(vbos[0], sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glNamedBufferData(vbos[1], 4 * (4*4 + 3*3), nullptr, GL_DYNAMIC_DRAW);
+		glNamedBufferStorage(vbos[0], sizeof(vertices), vertices, 0);
+		glNamedBufferStorage(vbos[1], 1 * 4 * (4*4 + 3*3), nullptr, GL_DYNAMIC_STORAGE_BIT);
 		glNamedBufferData(ebo, sizeof(indicies), indicies, GL_STATIC_DRAW);
 	}
 	// change settings
