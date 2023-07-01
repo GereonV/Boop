@@ -4,13 +4,6 @@
 // column major
 typedef float mat3[3][3];
 typedef float mat4[4][4];
-constexpr mat3 mat3_identity = {
-	{1.0f}, {[1] = 1.0f}, {[2] = 1.0f},
-};
-constexpr mat4 mat4_identity = {
-	{1.0f}, {[1] = 1.0f}, {[2] = 1.0f}, {[3] = 1.0f},
-};
-
 typedef struct {
 	float x, y, z;
 } vec3;
