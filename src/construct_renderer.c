@@ -153,7 +153,7 @@ void construct_renderer() {
 	}
 	for(GLuint i = 0; i < 3; ++i) {
 		glEnableVertexArrayAttrib(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i);
-		glVertexArrayAttribFormat(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, 3, GL_FLOAT, false, i * 3 * sizeof(float));
+		glVertexArrayAttribFormat(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, 3, GL_FLOAT, false, (i * 3 + 16) * sizeof(float));
 		glVertexArrayAttribBinding(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, INSTANCE_BINDING_INDEX);
 	}
 	glVertexArrayBindingDivisor(vao, INSTANCE_BINDING_INDEX, 1);
