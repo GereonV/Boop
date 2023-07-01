@@ -25,7 +25,6 @@
 "	float specular = specularBrightness * specStrength;\n" \
 "\n" \
 "	fColor = vec4((ambient + diffuse + specular) * lightColor * color, 1);\n" \
-"	fColor = vec4(color, 1);\n" \
 "}\n" \
 ""
 #define VERTEX_GLSL \

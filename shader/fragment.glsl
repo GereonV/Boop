@@ -24,5 +24,4 @@ void main() {
 	float specular = specularBrightness * specStrength;
 
 	fColor = vec4((ambient + diffuse + specular) * lightColor * color, 1);
-	fColor = vec4(color, 1);
 }

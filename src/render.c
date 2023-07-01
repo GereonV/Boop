@@ -12,12 +12,12 @@ static struct {
 };
 
 void render() {
-	calculate_model_view_and_normal_matrix(&matrices.model_view_matrix, &matrices.normal_matrix,
-		&(object_t) {{0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, 0.0f},
-		(vec3) {0.0f, 0.0f, 1.0f});
+	double time = glfwGetTime();
 	int width, height;
-	// double time = glfwGetTime();
 	glfwGetFramebufferSize(window, &width, &height);
+	calculate_model_view_and_normal_matrix(&matrices.model_view_matrix, &matrices.normal_matrix,
+		&(object_t) {{-1.0f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, time},
+		(vec3) {0.0f, 0.0f, 3.0f});
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(vao);
