@@ -41,12 +41,10 @@
 "out vec3 color;\n" \
 "\n" \
 "void main() {\n" \
-"	// vec4 pos = vModelViewMat * vec4(vPosition, 1);\n" \
-"	// position = pos.xyz;\n" \
-"	// normal = vNormalMat * vNormal;\n" \
-"	color = vPosition + 0.5;\n" \
-"	vec4 pos = vec4(vPosition, 1);\n" \
-"	pos.z -= 1;\n" \
+"	vec4 pos = vModelViewMat * vec4(vPosition, 1);\n" \
 "	gl_Position = uProjectionMat * pos;\n" \
+"	position = pos.xyz;\n" \
+"	normal = vNormalMat * vNormal;\n" \
+"	color = vPosition + 0.5;\n" \
 "}\n" \
 ""

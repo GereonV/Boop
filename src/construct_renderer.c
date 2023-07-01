@@ -156,12 +156,12 @@ void construct_renderer() {
 		glVertexArrayAttribFormat(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, 3, GL_FLOAT, false, i * 3 * sizeof(float));
 		glVertexArrayAttribBinding(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, INSTANCE_BINDING_INDEX);
 	}
+	glVertexArrayBindingDivisor(vao, INSTANCE_BINDING_INDEX, 1);
 	{ // construct buffer objects
 		GLuint vbos[2]; glGenBuffers(2, vbos); instance_vbo = vbos[1];
 		GLuint ebo;     glCreateBuffers(1, &ebo);
 		glVertexArrayVertexBuffer(vao,   VERTEX_BINDING_INDEX, vbos[0], 0,  6 * sizeof(float)); // 2 * vec3
 		glVertexArrayVertexBuffer(vao, INSTANCE_BINDING_INDEX, vbos[1], 0, 25 * sizeof(float)); // mat4 + mat3
-		glVertexArrayBindingDivisor(vao, vbos[1], 1);
 		glVertexArrayElementBuffer(vao, ebo);
 		glNamedBufferStorage(vbos[0], sizeof(vertices), vertices, 0);
 		glNamedBufferStorage(vbos[1], 1 * 4 * (4*4 + 3*3), nullptr, GL_DYNAMIC_STORAGE_BIT);
