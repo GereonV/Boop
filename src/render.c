@@ -9,20 +9,25 @@ instance_attributes_t instance_attributes[] = {
 };
 
 constexpr object_t objects[] = {
-	{{-1.0f, -0.5f,  0.0f}, {1.0f, 1.0f, 1.0f}, 0.0f},
-	{{ 2.0f, -0.7f, -4.0f}, {2.0f, 1.0f, 5.0f}, 1.0f},
+	{{-1.0f, -0.7f,  0.0f}, {1.0f, 1.0f, 1.0f}, 0.0f},
+	{{ 2.0f, -1.0f, -4.0f}, {3.0f, 1.0f, 5.0f}, 1.0f},
 };
 
 static_assert(ARRSIZE(instance_attributes) == ARRSIZE(objects));
+
+static vec3 camera_position = {0.0f, 0.0f, 3.0f};
 
 void render() {
 	double time = glfwGetTime();
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	for(int i = 0; i < ARRSIZE(instance_attributes); ++i)
-		calculate_model_view_and_normal_matrix(&instance_attributes[i].model_view_matrix, &instance_attributes[i].normal_matrix,
+		calculate_model_view_and_normal_matrix(
+			&instance_attributes[i].model_view_matrix,
+			&instance_attributes[i].normal_matrix,
 			&objects[i],
-			(vec3) {0.0f, 0.0f, 3.0f});
+			camera_position
+		);
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(vao);

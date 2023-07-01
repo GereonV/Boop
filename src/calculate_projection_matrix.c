@@ -13,9 +13,9 @@
 // z has two solutions; we pick -near and -far
 // m1*-near+m2=-near ∧ m1*-far+m2=far
 // m1=(far+near)/(near-far) ∧ m2=2*far*near/(near-far)
-#define TOP  0.04f // 43.6° vertical fov
-#define NEAR 0.1f
-#define FAR  5.0f
+#define TOP   0.04f // 43.6° vertical fov
+#define NEAR  0.1f
+#define FAR  15.0f
 static mat4 perspective_projection_matrix = {
 	{NEAR / TOP}, {[1] = NEAR / TOP}, {[2] = (FAR + NEAR)/(NEAR - FAR), -1.0f}, {[2] = 2 * FAR * NEAR / (NEAR - FAR)},
 };
