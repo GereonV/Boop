@@ -24,13 +24,13 @@ static char * get_info_log(GLuint obj, getter_t getter, info_log_getter_t info_l
 }
 
 static GLuint construct_shader(GLenum type, char const source[static 1], char const name[static 1]) {
-	GLuint shader = glCreateShader(type);
+	auto shader = glCreateShader(type);
 	glShaderSource(shader, 1, &source, nullptr);
 	glCompileShader(shader);
 	GLint success; glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if(success)
 		return shader;
-	char * info_log = get_info_log(shader, glGetShaderiv, glGetShaderInfoLog);
+	auto info_log = get_info_log(shader, glGetShaderiv, glGetShaderInfoLog);
 	fprintf(stderr, "Compilation of %s failed:\n%s", name, info_log);
 	// no `free()` because `exit()` will be called
 	return 0;
@@ -119,8 +119,8 @@ void construct_renderer() {
 	}
 	// glfwSwapInterval(0);
 	{ // construct shader program
-		GLuint vertex = construct_shader(GL_VERTEX_SHADER, vertex_shader_source, "vertex shader");
-		GLuint fragment = construct_shader(GL_FRAGMENT_SHADER, fragment_shader_source, "fragment shader");
+		auto vertex = construct_shader(GL_VERTEX_SHADER, vertex_shader_source, "vertex shader");
+		auto fragment = construct_shader(GL_FRAGMENT_SHADER, fragment_shader_source, "fragment shader");
 		if(!vertex || !fragment)
 			exit(1);
 		program = glCreateProgram();
@@ -129,7 +129,7 @@ void construct_renderer() {
 		glLinkProgram(program);
 		GLint success; glGetProgramiv(program, GL_LINK_STATUS, &success);
 		if(!success) {
-			char * info_log = get_info_log(program, glGetProgramiv, glGetProgramInfoLog);
+			auto info_log = get_info_log(program, glGetProgramiv, glGetProgramInfoLog);
 			fprintf(stderr, "Linking failed:\n%s", info_log);
 			exit(1);
 		}

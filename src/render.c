@@ -18,10 +18,10 @@ static_assert(ARRSIZE(instance_attributes) == ARRSIZE(objects));
 static vec3 camera_position = {0.0f, 0.0f, 3.0f};
 
 void render() {
-	double time = glfwGetTime();
+	// auto time = glfwGetTime();
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
-	for(int i = 0; i < ARRSIZE(instance_attributes); ++i)
+	for(auto i = ARRSIZE(instance_attributes); i--;)
 		calculate_model_view_and_normal_matrix(
 			&instance_attributes[i].model_view_matrix,
 			&instance_attributes[i].normal_matrix,
