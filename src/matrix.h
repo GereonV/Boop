@@ -15,7 +15,7 @@ typedef struct {
 } object_t;
 
 // model_view and normal are assumed to be identities or previous results
-void calculate_model_view_and_normal_matrix(mat4 * model_view, mat3 * normal, object_t const * object, vec3 camera_position);
+void calculate_model_view_and_normal_matrix(mat4 model_view[static restrict 1], mat3 normal[static restrict 1], object_t const object[static 1], vec3 camera_position);
 mat4 const * calculate_projection_matrix(float fov);
 
 #endif

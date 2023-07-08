@@ -23,7 +23,7 @@ static char * get_info_log(GLuint obj, getter_t getter, info_log_getter_t info_l
 	return info_log;
 }
 
-static GLuint construct_shader(GLenum type, char const * source, char const * restrict name) {
+static GLuint construct_shader(GLenum type, char const source[static 1], char const name[static 1]) {
 	GLuint shader = glCreateShader(type);
 	glShaderSource(shader, 1, &source, nullptr);
 	glCompileShader(shader);
