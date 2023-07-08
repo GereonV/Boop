@@ -22,8 +22,6 @@ static vec3 camera_position = {0.0f, 0.0f, 3.0f};
 
 void render() {
 	// auto time = glfwGetTime();
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
 	for(auto i = ARRSIZE(instance_attributes); i--;)
 		calculate_model_view_and_normal_matrix(
 			&instance_attributes[i].model_view_matrix,
@@ -31,14 +29,12 @@ void render() {
 			&objects[i],
 			camera_position
 		);
-	glViewport(0, 0, width, height);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBindVertexArray(vao);
-	glUseProgram(program);
 	glNamedBufferSubData(instance_vbo, 0, sizeof(instance_attributes), instance_attributes);
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, width, height);
 	glUniformMatrix4fv(PROJECTION_MATRIX_UNIFORM_LOCATION, 1, false, (float *) calculate_projection_matrix((float) width / (float) height));
 	glDrawElementsInstanced(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, nullptr, ARRSIZE(instance_attributes));
-	glBindVertexArray(0);
-	glUseProgram(0);
 	glfwSwapBuffers(window);
 }
