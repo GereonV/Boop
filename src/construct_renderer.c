@@ -6,6 +6,19 @@
 GLFWwindow * window;
 GLuint program, vao, instance_vbo;
 
+#define VERTEX_ARRAY_ATTRIB(vao, attrib, binding, struct_t, member) \
+	do { \
+		glEnableVertexArrayAttrib(vao, attrib); \
+		glVertexArrayAttribFormat(vao, attrib, \
+			ARRSIZE((struct_t) {}.member), \
+			_Generic((struct_t) {}.member[0], GLfloat: GL_FLOAT), false, \
+			(GLuint) (typeof(sizeof(nullptr))) &((struct_t *) nullptr)->member \
+		); \
+		glVertexArrayAttribBinding(vao, attrib, binding); \
+	} while(false)
+#define VERTEX_ARRAY_ATTRIBS(vao, attrib, binding, struct_t, member) \
+	for(GLuint i = 0; i < ARRSIZE((struct_t) {}.member); ++i) \
+		VERTEX_ARRAY_ATTRIB(vao, attrib + i, binding, struct_t, member[i])
 #define POSITION_ATTRIBUTE_INDEX          0
 #define NORMAL_ATTRIBUTE_INDEX            1
 #define MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX 2
@@ -36,39 +49,43 @@ static GLuint construct_shader(GLenum type, char const source[static 1], char co
 	return 0;
 }
 
-constexpr float vertices[] = {
+typedef struct {
+	float position[3], normal[3];
+} vertex_attributes_t;
+
+constexpr vertex_attributes_t vertices[] = {
 	// near bottom left
-	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, //  0 x
-	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, //  1 y
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //  2 z
+	{{-0.5f, -0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}}, //  0 x
+	{{-0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}}, //  1 y
+	{{-0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, //  2 z
 	// near bottom right
-	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //  3 x
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f, //  4 y
-	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //  5 z
+	{{ 0.5f, -0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}}, //  3 x
+	{{ 0.5f, -0.5f,  0.5f}, { 0.0f, -1.0f,  0.0f}}, //  4 y
+	{{ 0.5f, -0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, //  5 z
 	// near top right
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //  6 x
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //  7 y
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //  8 z
+	{{ 0.5f,  0.5f,  0.5f}, { 1.0f,  0.0f,  0.0f}}, //  6 x
+	{{ 0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}}, //  7 y
+	{{ 0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, //  8 z
 	// near top left
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, //  9 x
-	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, // 10 y
-	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, // 11 z
+	{{-0.5f,  0.5f,  0.5f}, {-1.0f,  0.0f,  0.0f}}, //  9 x
+	{{-0.5f,  0.5f,  0.5f}, { 0.0f,  1.0f,  0.0f}}, // 10 y
+	{{-0.5f,  0.5f,  0.5f}, { 0.0f,  0.0f,  1.0f}}, // 11 z
 	// far bottom left
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, // 12 x
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, // 13 y
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // 14 z
+	{{-0.5f, -0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}}, // 12 x
+	{{-0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}}, // 13 y
+	{{-0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, // 14 z
 	// far bottom right
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, // 15 x
-	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, // 16 y
-	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // 17 z
+	{{ 0.5f, -0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}}, // 15 x
+	{{ 0.5f, -0.5f, -0.5f}, { 0.0f, -1.0f,  0.0f}}, // 16 y
+	{{ 0.5f, -0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, // 17 z
 	// far top right
-	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f, // 18 x
-	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, // 19 y
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // 20 z
+	{{ 0.5f,  0.5f, -0.5f}, { 1.0f,  0.0f,  0.0f}}, // 18 x
+	{{ 0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}}, // 19 y
+	{{ 0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, // 20 z
 	// far top left
-	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, // 21 x
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, // 22 y
-	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // 23 z
+	{{-0.5f,  0.5f, -0.5f}, {-1.0f,  0.0f,  0.0f}}, // 21 x
+	{{-0.5f,  0.5f, -0.5f}, { 0.0f,  1.0f,  0.0f}}, // 22 y
+	{{-0.5f,  0.5f, -0.5f}, { 0.0f,  0.0f, -1.0f}}, // 23 z
 };
 
 constexpr unsigned char indicies[] = {
@@ -140,32 +157,20 @@ void construct_renderer() {
 	}
 	// construct vertex array object
 	glCreateVertexArrays(1, &vao);
-	glEnableVertexArrayAttrib(vao, POSITION_ATTRIBUTE_INDEX);
-	glVertexArrayAttribFormat(vao, POSITION_ATTRIBUTE_INDEX, 3, GL_FLOAT, false, 0);
-	glVertexArrayAttribBinding(vao, POSITION_ATTRIBUTE_INDEX, VERTEX_BINDING_INDEX);
-	glEnableVertexArrayAttrib(vao, NORMAL_ATTRIBUTE_INDEX);
-	glVertexArrayAttribFormat(vao, NORMAL_ATTRIBUTE_INDEX, 3, GL_FLOAT, false, 3 * sizeof(float));
-	glVertexArrayAttribBinding(vao, NORMAL_ATTRIBUTE_INDEX, VERTEX_BINDING_INDEX);
-	for(GLuint i = 0; i < 4; ++i) {
-		glEnableVertexArrayAttrib(vao, MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX + i);
-		glVertexArrayAttribFormat(vao, MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX + i, 4, GL_FLOAT, false, i * 4 * sizeof(float));
-		glVertexArrayAttribBinding(vao, MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX + i, INSTANCE_BINDING_INDEX);
-	}
-	for(GLuint i = 0; i < 3; ++i) {
-		glEnableVertexArrayAttrib(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i);
-		glVertexArrayAttribFormat(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, 3, GL_FLOAT, false, (i * 3 + 16) * sizeof(float));
-		glVertexArrayAttribBinding(vao, NORMAL_MATRIX_ATTRIBUTE_INDEX + i, INSTANCE_BINDING_INDEX);
-	}
+	VERTEX_ARRAY_ATTRIB (vao,          POSITION_ATTRIBUTE_INDEX,   VERTEX_BINDING_INDEX,   vertex_attributes_t, position);
+	VERTEX_ARRAY_ATTRIB (vao,            NORMAL_ATTRIBUTE_INDEX,   VERTEX_BINDING_INDEX,   vertex_attributes_t, normal);
+	VERTEX_ARRAY_ATTRIBS(vao, MODEL_VIEW_MATRIX_ATTRIBUTE_INDEX, INSTANCE_BINDING_INDEX, instance_attributes_t, model_view_matrix);
+	VERTEX_ARRAY_ATTRIBS(vao,     NORMAL_MATRIX_ATTRIBUTE_INDEX, INSTANCE_BINDING_INDEX, instance_attributes_t, normal_matrix);
 	glVertexArrayBindingDivisor(vao, INSTANCE_BINDING_INDEX, 1);
 	{ // construct buffer objects
 		GLuint vbos[2]; glGenBuffers(2, vbos); instance_vbo = vbos[1];
 		GLuint ebo;     glCreateBuffers(1, &ebo);
-		glVertexArrayVertexBuffer(vao,   VERTEX_BINDING_INDEX, vbos[0], 0, 2 * sizeof(vec3));
+		glVertexArrayVertexBuffer(vao,   VERTEX_BINDING_INDEX, vbos[0], 0, sizeof(vertex_attributes_t));
 		glVertexArrayVertexBuffer(vao, INSTANCE_BINDING_INDEX, vbos[1], 0, sizeof(instance_attributes_t));
 		glVertexArrayElementBuffer(vao, ebo);
 		glNamedBufferStorage(vbos[0], sizeof(vertices), vertices, 0);
 		glNamedBufferStorage(vbos[1], sizeof(instance_attributes), nullptr, GL_DYNAMIC_STORAGE_BIT);
-		glNamedBufferData(ebo, sizeof(indicies), indicies, GL_STATIC_DRAW);
+		glNamedBufferStorage(ebo, sizeof(indicies), indicies, 0);
 	}
 	// change settings
 	glClearColor(0.4f, 0.6f, 1.0f, 1.0f);

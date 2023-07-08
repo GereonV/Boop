@@ -1,6 +1,5 @@
 #include "render_impl.h"
 
-#define ARRSIZE(a) sizeof(a) / sizeof(a[0])
 #define PROJECTION_MATRIX_UNIFORM_LOCATION 0
 
 constexpr instance_attributes_t instance_attributes_identity = {

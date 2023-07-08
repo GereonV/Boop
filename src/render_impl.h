@@ -2,6 +2,8 @@
 #include <glad/gl.h>
 #include "matrix.h"
 
+#define ARRSIZE(a) sizeof(a) / sizeof(a[0])
+
 extern GLuint program, vao, instance_vbo;
 
 typedef struct {
