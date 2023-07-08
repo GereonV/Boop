@@ -3,6 +3,10 @@
 #define ARRSIZE(a) sizeof(a) / sizeof(a[0])
 #define PROJECTION_MATRIX_UNIFORM_LOCATION 0
 
+constexpr instance_attributes_t instance_attributes_identity = {
+	{{1.0f}, {[1] = 1.0f}, {[2] = 1.0f}, {[3] = 1.0f}},
+	{{1.0f}, {[1] = 1.0f}, {[2] = 1.0f}}
+};
 instance_attributes_t instance_attributes[] = {
 	instance_attributes_identity,
 	instance_attributes_identity,
